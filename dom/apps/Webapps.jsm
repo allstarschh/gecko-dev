@@ -4911,6 +4911,7 @@ this.DOMApplicationRegistry = {
     if (browserOnly) {
       attributes.inBrowser = true;
     }
+    dump("XXX pattern="+JSON.stringify(attributes)+"\n");
     this._notifyCategoryAndObservers(null, "clear-origin-data", JSON.stringify(attributes));
   }
 };

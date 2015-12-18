@@ -3,12 +3,13 @@
   <head>
     <meta charset="utf-8">
     <script>
-      window.onmessage = function (event) {
+     // window.onmessage = function (event) {
+        /*dump("XXX onmessage event.data="+event.data+"\n");
         if (event.data !== "register") {
           return;
-        }
+        }*/
         var promise = navigator.serviceWorker.register("worker.js");
-        window.onmessage = function (event) {
+        /*window.onmessage = function (event) {
           if (event.data !== "unregister") {
             return;
           }
@@ -16,8 +17,8 @@
             registration.unregister();
           });
           window.onmessage = null;
-        };
-      };
+        };*/
+      //};
     </script>
   </head>
   <body>

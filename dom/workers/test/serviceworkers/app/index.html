@@ -3,6 +3,7 @@
   <head>
     <title>Test app for bug 1169249</title>
     <script type='application/javascript;version=1.7'>
+
 function ok(aCondition, aMessage) {
   if (aCondition) {
     alert('OK: ' + aMessage);
@@ -29,8 +30,21 @@ function registerServiceWorker() {
   });
 }
 
+function AddIframe() {
+  return new Promise((resolve, reject) => {
+    let iframe = document.createElement('iframe');
+    iframe.setAttribute('mozbrowser', 'true');
+    iframe.setAttribute('src', "http://test/chrome/dom/workers/test/serviceworkers/serviceworkerinfo_iframe.html");
+    document.body.appendChild(iframe);
+    iframe.addEventListener("mozbrowserloadend", function(){
+      dump("XXX iframe loaded\n");
+      resolve(); 
+    });
+  });
+}
 function runTests() {
   return Promise.resolve()
+    .then(AddIframe)
     .then(registerServiceWorker)
     .then(ready)
 }
