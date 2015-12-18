@@ -288,10 +288,6 @@ this.PushService = {
   _clearOriginData: function(data) {
     console.log("clearOriginData()");
 
-    if (!data) {
-      return Promise.resolve();
-    }
-
     let pattern = JSON.parse(data);
     return this._db.clearIf(record => {
       if (!record.matchesOriginAttributes(pattern)) {

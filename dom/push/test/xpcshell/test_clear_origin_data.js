@@ -9,7 +9,7 @@ const userAgentID = 'bd744428-f125-436a-b6d0-dd0c9845837f';
 
 let clearForPattern = Task.async(function* (testRecords, pattern) {
   let patternString = JSON.stringify(pattern);
-  yield PushService._clearOriginData(patternString);
+  yield PushService.observe(null, 'clear-origin-data', patternString);
 
   for (let length = testRecords.length; length--;) {
     let test = testRecords[length];
@@ -77,6 +77,10 @@ add_task(function* test_webapps_cleardata() {
     clearIf: { inBrowser: true },
   }, {
     scope: 'https://example.org/3',
+    originAttributes: { appId: 3 },
+    clearIf: {},
+  }, {
+    scope: 'https://example.org/4',
     originAttributes: { appId: 4, inBrowser: true },
     clearIf: { inBrowser: true },
   }];
@@ -137,6 +141,9 @@ add_task(function* test_webapps_cleardata() {
 
   // Removes all records where `inBrowser` is true.
   yield clearForPattern(testRecords, { inBrowser: true });
+
+  // Removes all remaining records.
+  yield clearForPattern(testRecords, {});
 
   equal(testRecords.length, 0, 'Should remove all test records');
   yield waitForPromise(unregisterPromise, DEFAULT_TIMEOUT,
