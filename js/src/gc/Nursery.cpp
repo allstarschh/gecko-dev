@@ -1266,9 +1266,18 @@ void js::Nursery::doPretenuring(JSRuntime* rt, JS::GCReason reason,
                              ? double(zoneTenuredStrings) /
                                    double(zone->nurseryAllocatedStrings)
                              : 0.0;
+    bool highTenuredRate = tenuredRate > tunables().pretenureStringThreshold();
     bool disableNurseryStrings =
-        pretenureStr && zone->allocNurseryStrings &&
-        tenuredRate > tunables().pretenureStringThreshold();
+        pretenureStr && zone->allocNurseryStrings && highTenuredRate;
+
+    // GC Heap threshold is only updated at the end of the major GC. When many
+    // strings got tenured, update the GC heap threshold accordingly.
+    if (highPromotionRate && highTenuredRate &&
+        zone->gcHeapSize.bytes() > zone->gcHeapThreshold.startBytes()) {
+      AutoLockGC lock(&rt->gc);
+      zone->updateGCStartThresholds(rt->gc, GC_NORMAL, lock);
+    }
+
     bool disableNurseryBigInts = pretenureBigInt && zone->allocNurseryBigInts &&
                                  zone->tenuredBigInts >= 30 * 1000;
     if (disableNurseryStrings || disableNurseryBigInts) {
